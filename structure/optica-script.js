@@ -1,194 +1,181 @@
 connection = new Mongo("localhost");
+
+print('-------------- Connecting to database --------------');
+
 db = connection.getDB("optica");
+
+print('-------------- Deleting database --------------');
+
 db.dropDatabase();
 
+print('-------------- Creating collections --------------');
+
 db.createCollection("customers");
-db.createCollection("employees");
-db.createCollection("suppliers");
 db.createCollection("glasses");
-db.createCollection("orders");
+db.createCollection("suppliers");
+
+print('-------------- Creating Suppliers --------------');
 
 
-//-------------- Creating customers
+db.suppliers.insertMany(
+    [
+        {
+            _id: 0,
+            name: "Gafas SL",
+            nif: "23456632T",
+            phone: 658984532,
+            fax: 957859505,
+            address: {
+                street: "Paseo marítimo",
+                number: 254,
+                floor: 1,
+                door: 1,
+                city: "Valencia",
+                zip: 89797,
+                country: "Spain",
+            },
+            glasses: [
+                {
+                    ref: 0,
+                    brand: "RayBan",
 
+                }, {
+                    ref: 1,
+                    brand: "Michael Kors",
+                }
+            ]
+        },
+        {
+            _id: 1,
+            name: "Optica Andorrana",
+            nif: "89875865X",
+            phone: 658984532,
+            fax: 957859505,
+            address: {
+                street: "Av. Meritxell",
+                number: 5,
+                floor: 1,
+                door: 1,
+                city: "Andorra",
+                zip: 89797,
+                country: "Andorra",
+            },
+            glasses: [
+                {
+                    ref: 0,
+                    brand: "Channel",
 
-db.customers.insertOne(
-    {
-    _id: 0,
-    name: "Xavi",
-    email: "xavi@gmail.com",
-    phone: 658956232,
-    address : { 
-        street: "Sepúlveda",
-        number: 58,
-        floor: 2,
-        door: 1,
-        city: "Barcelona",
-        zip: 08018,
-        country: "Spain",
-    },
-    recommended_by: null,
-    created_at: Date.now()
-    }
-);
+                }, {
+                    ref: 1,
+                    brand: "Guess",
+                }
+            ]
 
-db.customers.insertOne(
-    {
-    _id: 1,
-    name: "Laura",
-    email: "laura@gmail.com",
-    phone: 658984532,
-    address : { 
-        street: "Cervantes",
-        number: 325,
-        floor: 4,
-        door: 3,
-        city: "Madrid",
-        zip: 28695,
-        country: "Spain",
-    },
-    recommended_by: 0,
-    created_at: Date.now()
-    }
-);
-
-
-//-------------- Creating employees
-
-
-db.employees.insertOne(
-    {
-    _id: 0,
-    name: "Jesús",
-    created_at: Date.now()
-    }
-);
-
-db.employees.insertOne(
-    {
-    _id: 1,
-    name: "María",
-    created_at: Date.now()
-    }
+        }
+    ]
 );
 
 
-//-------------- Creating suppliers
+print('-------------- Creating Costumers --------------');
 
+db.customers.insertMany(
+    [{
+        _id: 0,
+        name: "Xavi",
+        email: "xavi@gmail.com",
+        phone: 658956232,
+        address: {
+            street: "Sepúlveda",
+            number: 58,
+            floor: 2,
+            door: 1,
+            city: "Barcelona",
+            zip: 08018,
+            country: "Spain",
+        },
+        recommended_by: null,
+        employee: {
+            _id: 0,
+            name: "Jesús"
+        },
+        created_at: ISODate()
 
-db.suppliers.insertOne(
-    {
-    _id: 0,
-    name: "Optica Andorrana",
-    nif: "89875865X",
-    phone: 658984532,
-    fax: 957859505,
-    address : { 
-        street: "Av. Meritxell",
-        number: 5,
-        floor: 1,
-        door: 1,
-        city: "Andorra",
-        zip: 89797,
-        country: "Andorra",
-    },
-    created_at: Date.now()
+    }, {
+        _id: 1,
+        name: "Laura",
+        email: "laura@gmail.com",
+        phone: 658984532,
+        address: {
+            street: "Cervantes",
+            number: 325,
+            floor: 4,
+            door: 3,
+            city: "Madrid",
+            zip: 28695,
+            country: "Spain",
+        },
+        recommended_by: { $ref: 'customers', $id: 0 },
+        employee: {
+            _id: 1,
+            name: "María"
+        },
+        created_at: ISODate()
     }
+    ]
 );
 
-db.suppliers.insertOne(
-    {
-    _id: 1,
-    name: "Gafas SL",
-    nif: "23456632T",
-    phone: 658984532,
-    fax: 957859505,
-    address : { 
-        street: "Paseo marítimo",
-        number: 254,
-        floor: 1,
-        door: 1,
-        city: "Valencia",
-        zip: 89797,
-        country: "Spain",
-    },
-    created_at: Date.now()
-    }
-);
+print('-------------- Creating Glasses --------------');
+
+db.glasses.insertMany(
+    [
+        {
+            _id: 0,
+            lens_right: {
+                prescription: 0.50,
+                color: "gris",
+            },
+            lens_left: {
+                prescription: 0.50,
+                color: "gris",
+            },
+            frame: {
+                material: "Acero",
+                color: "negro"
+            },
+            brand: "RayBan",
+            price: 120,
+            supplier: { $ref: 'suppliers', $id: 0 },
+            customer: { $ref: 'customers', $id: 0 },
+            employee: {
+                cod_emp: 25,
+                name: "María"
+            },
+        },
+        {
+            _id: 1,
+            lens_right: {
+                prescription: 0.50,
+                color: "gris",
+            },
+            lens_left: {
+                prescription: 0.50,
+                color: "gris",
+            },
+            frame: {
+                material: "Aluminio",
+                color: "marrón"
+            },
+            brand: "Guess",
+            price: 180,
+            supplier: { $ref: 'suppliers', $id: 1 },
+            customer: { $ref: 'customers', $id: 1 },
+            employee: {
+                cod_emp: 32,
+                name: "Jesús"
+            },
+        }
+    ]
+)
 
 
-//-------------- Creating glasses
-
-
-db.glasses.insertOne(
-    {
-    _id: 0,
-    brand: "RayBan",
-    frame: "Acero",
-    frame_color: "negro",
-    price: 120,
-    grad_left: 0.50,
-    color_left: "gris",
-    grad_right: 0.50,
-    color_right: "gris",
-    supplier_id: 0,
-    created_at: Date.now()
-    }
-);
-
-db.glasses.insertOne(
-    {
-    _id: 1,
-    brand: "Guess",
-    frame: "Aluminio",
-    frame_color: "marrón",
-    price: 180,
-    grad_left: 1.50,
-    color_left: "verde",
-    grad_right: 1.25,
-    color_right: "verde",
-    supplier_id: 1,
-    created_at: Date.now()
-    }
-);
-
-
-//-------------- Creating orders
-
-
-db.orders.insertOne(
-    {
-    _id: 0,
-    customer_id: 1,
-    employee_id: 0,
-    glasses: [
-    {
-        glasses_id: 0,
-        price: 120,
-        quantity: 2, 
-    },
-    {
-        glasses_id: 1,
-        price: 180,
-        quantity: 1, 
-    }
-    ],
-    total_price: 360
-    }
-);
-
-db.orders.insertOne(
-    {
-    _id: 1,
-    customer_id: 0,
-    employee_id: 1,
-    glasses: [
-    {
-        glasses_id: 1,
-        price: 180,
-        quantity: 1, 
-    }
-    ],
-    total_price: 180
-    }
-);
+print('-------------- End script --------------');
